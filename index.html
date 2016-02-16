@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Designing Components with React & CSSModules
+
+---
+
+class: center, middle
+
+# Fatigue
+
+???
+
+- No reason to feel this way!!!
+- Less about tools and more about FOMO and insecurity
+- Not telling you that what you are doing is wrong or bad.
+- Tools are secondary to ideas. We need to think about tradeoffs with tools
+- This is about an idea. I use these things because they help me reach my goals.
+- You should stick to tools that help you achieve your goals. If that happens
+to be some of the stuff that we talk about here then that works out.
+
+---
+
+# What are we gunna talk about?
+
+- Why Components?
+--
+
+- Webpack
+--
+
+- React
+--
+
+- PostCSS
+--
+
+- CSSModules
+
+???
+
+- We aren't going to say anything about flux
+- This is really more about an idea then anything
+- Some of this I'm still working on.
+
+---
+
+class: center, middle
+
+# Why components?
+
+???
+
+I had been doing a lot of front end development with tools like Angular and
+Sass. Lots of Rails. I was getting really diss-satisfied with my workflow. I
+was trying to figure out how to get more re-use out of my styles.
+
+I was also frustrated trying to make changes in my templates that were in most
+cases hard coupled to my controller or directive. I was having tons of trouble with data binding.
+
+I think there are 2 problems here
+
+---
+
+class: center, middle
+
+# Problem 1: Styles are hard to maintain
+
+---
+
+# Ways to organize CSS
+
+- atomic design
+- Smacss
+- OOCSS
+- BEM
+- I just stick stuff in style attributes on elements
+
+???
+
+There are so many ways to try to organize this stuff. Its a testament to how
+hard this problem is.
+
+---
+
+# Why is this hard?
+
+- Encapsulation is hard
+--
+
+- Global scope
+--
+
+- Browsers and the box model
+
+???
+
+I personally this is hard for the same reasons that I think OO is hard. We're
+bad at scoping and segmenting things. The problem is made worse by the fact that
+CSS isn't really tested. It also has global scope. Which means that anything
+from anywhere can mutate that global scope.
+
+---
+
+class: center, middle
+
+# Atomic Design
+
+---
+
+class: center, middle
+
+# Smacss
+
+---
+
+class: center, middle
+
+# OOCSS
+
+---
+
+class: center, middle
+
+# Problem 2: The separation of concerns is wrong
+
+---
+
+class: center, middle
+
+# What if you were doing TDD?
+
+???
+
+Think about this in terms of testing. If you want to test a controller then you
+need to provide a double of the html, or the html itself in order you to fully
+exercise the controller. If you have to click DOM elements then test some state
+elsewhere...well in a TDD/BDD world that would tell you that you've separated
+things incorrectly.
+
+---
+
+class: center, middle
+
+# "What if the DOM was just AST"
+
+???
+
+I was talking to my friend one night and I said, "What if the DOM was just an AST"
+You could hold onto some state and then just every clock tick just evaluate the
+AST". You would get all sorts of interactivity for free, you could compose AST
+fragments together, etc. I thought that this would be a great way to avoid
+dealing with all of the difficulties in re-use and data binding that I was having.
+
+---
+
+class: center, middle
+
+# "Dude have you seen React?"
+
+???
+
+Changed my life like Jesus. Never really looked back.
+
+---
+
+class: center, middle
+
+# Your app is built out of components
+
+---
+
+class: center, middle
+
+# Styles are tightly coupled to the structure of your html and thus the component
+
+---
+
+# Goals:
+
+- Empower Re-use
+--
+
+- Co-locate our assets
+--
+
+- Compose styles
+--
+
+???
+
+We can't garuntee that we'll get more re-use but we want to endeavor to do that
+
+---
+
+# Stickies avatar example PHOTO
+
+---
+
+# Directory structure
+
+```
+- components
+  - avatar
+    __tests__
+      - AvatarTest.js
+    - Avatar.jsx
+```
+
+---
+
+# Avatar component
+
+``` js
+import React from 'react'
+
+export const Avatar = ({ src, name }) => (
+  <img className="avatar" src={ src } title={ name } />
+)
+```
+
+---
+
+# Directory structure
+
+```
+- components
+  __tests__
+    - CardAuthors.jsx
+  - avatar
+    __tests__
+      - AvatarTest.js
+    - Avatar.jsx
+  CardAuthors.jsx
+```
+
+---
+
+# CardAuthors component
+
+
+``` js
+import React from 'react'
+import { Avatar } from './avatar/Avatar.jsx'
+
+export const CardAuthors = React.createClass({
+  getInitialState() {
+    return {
+      authors: [
+        {userId: 1, avatar_url: 'example.com/1.png', name: 'Chris'}
+      , {userId: 2, avatar_url: 'example.com/2.png', name: 'Alice'}
+      , {userId: 3, avatar_url: 'example.com/3.png', name: 'Archer'}
+      ]
+    }
+  }
+
+, render() {
+    let avatars = this.state.authors.map( author => (
+      return <Avatar key={author.userId} src={author.avatar_url} name={author.name} />
+    ))
+
+    return (
+      <div>
+        { avatars }
+      </div>
+    )
+  }
+})
+```
+
+---
+
+# TODO
+# Styles
+
+---
+
+# Avatar styles
+
+---
+
+# Card Author just gets flexbox styles
+
+---
+
+# How can we takle the problems of styling
+
+---
+
+# Composing base styles
+
+???
+
+No global pollution
+
+---
+
+# Composing base styles with each other to create component styles
+
+---
+
+# Stateful components just get layout styles
+
+---
+
+# How do we actually do this?
+
+---
+
+class: center, middle
+
+# Webpack
+
+---
+
+# Webpack
+
+- Allows loading of multiple types of files
+--
+
+- Code splitting
+--
+
+- Chunking and optimizations
+--
+
+- NPM modules
+--
+
+- Hot code reloading
+
+???
+
+Webpack is definitely a difficult tool. But there are a lot of good reasons to
+check it out.
+
+---
+
+# Loaders and pipelines
+
+---
+
+# React Loader
+
+???
+
+We just use babel here to compile our jsx
+
+---
+
+# CSS Loader
+
+???
+
+Using the CSS loader we can enable css modules in webpack.
+
+---
+
+class: center, middle
+
+# Post css
+
+---
+
+# Autoprefixer
+
+---
+
+# Auto group media queries
+
+---
+
+class: center, middle
+
+# Conclusion
+
+---
+
+class: center, middle
+
+# Think about what you want to achieve and use tools that help you do that.
+
+---
+
+class: center, middle
+
+# Focus on composition
+
+---
+
+class: center, middle
+
+# Thanks
+
+- git-repo
+- slides
+
+
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
