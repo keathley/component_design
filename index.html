@@ -8,12 +8,37 @@
       @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
       @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
 
+      html { font-size: 18px; }
+
       body { font-family: 'Droid Serif'; }
       h1, h2, h3 {
         font-family: 'Yanone Kaffeesatz';
         font-weight: normal;
       }
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+      .example-wrapper {
+        display: flex;
+        align-items: center;
+      }
+
+      .example {
+        flex-grow: 1;
+        flex-shrink: 0;
+        font-family: 'Yanone Kaffeesatz';
+        font-size: 2rem;
+        color: #fff;
+        text-align: center;
+      }
+      .example:not(:last-child) { margin-right: 1rem; }
+
+      .a2 { flex-grow: 2; }
+      .b2 { flex-grow: 1; }
+      .c2 { flex-grow: 2; }
+
+      .a { background-color: red;   }
+      .b { background-color: blue;  }
+      .c { background-color: green; }
     </style>
   </head>
   <body>
@@ -48,16 +73,16 @@ to be some of the stuff that we talk about here then that works out.
 - Why Components?
 --
 
-- Webpack
---
-
 - React
 --
 
-- PostCSS
+- CSSModules
 --
 
-- CSSModules
+- Webpack
+--
+
+- PostCSS
 
 ???
 
@@ -134,7 +159,7 @@ class: center, middle
 
 ---
 
-# Stickies avatar example PHOTO
+background-image: url("stickies.png")
 
 ---
 
@@ -229,13 +254,16 @@ hard this problem is.
 
 --
 
-- Encapsulation is hard
+- The box model
 --
 
 - Global scope
 --
 
-- Browsers and the box model
+- Encapsulation is hard
+--
+
+- Browsers
 
 ???
 
@@ -243,6 +271,105 @@ I personally this is hard for the same reasons that I think OO is hard. We're
 bad at scoping and segmenting things. The problem is made worse by the fact that
 CSS isn't really tested. It also has global scope. Which means that anything
 from anywhere can mutate that global scope.
+
+---
+
+class: center, middle
+
+# CSS has gotten a lot better
+
+---
+
+class: center, middle
+
+# Flexbox
+
+---
+
+# Flexbox
+
+``` css
+.example-wrapper { display: flex; }
+
+.example {
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+.a { background-color: red;  }
+.b { background-color: blue; }
+```
+
+.example-wrapper[
+  .example.a[A]
+  .example.b[B]]
+
+---
+
+# Flexbox
+
+``` css
+.example-wrapper { display: flex; }
+
+.example {
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+.a {
+  flex-grow: 2;
+  background-color: red;
+}
+
+.b {
+  flex-grow: 1;
+  background-color: blue;
+}
+```
+
+.example-wrapper[
+  .example.a.a2[A]
+  .example.b.b2[B]]
+
+---
+
+# Flexbox
+
+``` css
+.example-wrapper { display: flex; }
+
+.example {
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+.example:not(:last-child) { margin-right: 1rem; }
+
+.a {
+  flex-grow: 2;
+  background-color: red;
+}
+
+.b {
+  flex-grow: 1;
+  background-color: blue;
+}
+
+.c {
+  flex-grow: 2;
+  background-color: green;
+}
+```
+
+.example-wrapper[
+  .example.a.a2[A]
+  .example.b.b2[B]
+  .example.c.c2[C]]
+
+---
+
+class: center, middle
+
+# Styles are tightly coupled to the structure of your html and thus the component
 
 ---
 
@@ -264,25 +391,14 @@ class: center, middle
 
 ---
 
-class: center, middle
+# Avoiding global scope
 
-# Styles are tightly coupled to the structure of your html and thus the component
-
----
-
-# Goals:
-
-- Empower Re-use
---
-
-- Co-locate our assets
---
-
-- Compose styles
-
-???
-
-We can't guarantee that we'll get more re-use but we want to endeavor to do that
+```css
+.btn { /* all styles for Normal */ }
+.btn--disabled { /* overrides for Disabled */ }
+.btn--error { /* overrides for Error */ }
+.btn--in-progress { /* overrides for In Progress */
+```
 
 ---
 
@@ -785,7 +901,6 @@ https://github.com/keathley/webpack-react-skeleton
 http://keathley.io/component_design/
 
 ### @ChrisKeathley / keathley@carbonfive.com / keathley.io
-
 
 
     </textarea>
