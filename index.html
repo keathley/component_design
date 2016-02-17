@@ -43,6 +43,8 @@ to be some of the stuff that we talk about here then that works out.
 
 # What are we gunna talk about?
 
+--
+
 - Why Components?
 --
 
@@ -84,65 +86,7 @@ I think there are 2 problems here
 
 class: center, middle
 
-# Problem 1: Styles are hard to maintain
-
----
-
-# Ways to organize CSS
-
-- atomic design
-- Smacss
-- OOCSS
-- BEM
-- I just stick stuff in style attributes on elements
-
-???
-
-There are so many ways to try to organize this stuff. Its a testament to how
-hard this problem is.
-
----
-
-# Why is this hard?
-
-- Encapsulation is hard
---
-
-- Global scope
---
-
-- Browsers and the box model
-
-???
-
-I personally this is hard for the same reasons that I think OO is hard. We're
-bad at scoping and segmenting things. The problem is made worse by the fact that
-CSS isn't really tested. It also has global scope. Which means that anything
-from anywhere can mutate that global scope.
-
----
-
-class: center, middle
-
-# Atomic Design
-
----
-
-class: center, middle
-
-# Smacss
-
----
-
-class: center, middle
-
-# OOCSS
-
----
-
-class: center, middle
-
-# Problem 2: The separation of concerns is wrong
+# Problem 1: The separation of concerns is wrong
 
 ---
 
@@ -190,41 +134,16 @@ class: center, middle
 
 ---
 
-class: center, middle
-
-# Styles are tightly coupled to the structure of your html and thus the component
-
----
-
-# Goals:
-
-- Empower Re-use
---
-
-- Co-locate our assets
---
-
-- Compose styles
---
-
-???
-
-We can't garuntee that we'll get more re-use but we want to endeavor to do that
-
----
-
 # Stickies avatar example PHOTO
 
 ---
 
 # Directory structure
 
-```
-- components
-  - avatar
-    __tests__
-      - AvatarTest.js
-    - Avatar.jsx
+```js
+|-components
+  |-avatar
+    |-Avatar.jsx
 ```
 
 ---
@@ -243,21 +162,16 @@ export const Avatar = ({ src, name }) => (
 
 # Directory structure
 
-```
-- components
-  __tests__
-    - CardAuthors.jsx
-  - avatar
-    __tests__
-      - AvatarTest.js
-    - Avatar.jsx
-  CardAuthors.jsx
+``` js
+|-components
+  |-avatar
+    |- Avatar.jsx
+  |- CardAuthors.jsx
 ```
 
 ---
 
 # CardAuthors component
-
 
 ``` js
 import React from 'react'
@@ -276,7 +190,7 @@ export const CardAuthors = React.createClass({
 
 , render() {
     let avatars = this.state.authors.map( author => (
-      return <Avatar key={author.userId} src={author.avatar_url} name={author.name} />
+      <Avatar key={author.userId} src={author.avatar_url} name={author.name} />
     ))
 
     return (
@@ -290,38 +204,376 @@ export const CardAuthors = React.createClass({
 
 ---
 
-# TODO
-# Styles
+class: center, middle
+
+# Problem 2: Styles are hard to maintain
+
+---
+
+# Ways to organize CSS
+
+- atomic design
+- Smacss
+- OOCSS
+- BEM
+- I just stick stuff in style attributes on elements
+
+???
+
+There are so many ways to try to organize this stuff. Its a testament to how
+hard this problem is.
+
+---
+
+# Why is this hard?
+
+--
+
+- Encapsulation is hard
+--
+
+- Global scope
+--
+
+- Browsers and the box model
+
+???
+
+I personally this is hard for the same reasons that I think OO is hard. We're
+bad at scoping and segmenting things. The problem is made worse by the fact that
+CSS isn't really tested. It also has global scope. Which means that anything
+from anywhere can mutate that global scope.
+
+---
+
+class: center, middle
+
+# Atomic Design
+
+---
+
+class: center, middle
+
+# Smacss
+
+---
+
+class: center, middle
+
+# OOCSS
+
+---
+
+class: center, middle
+
+# Styles are tightly coupled to the structure of your html and thus the component
+
+---
+
+# Goals:
+
+- Empower Re-use
+--
+
+- Co-locate our assets
+--
+
+- Compose styles
+
+???
+
+We can't guarantee that we'll get more re-use but we want to endeavor to do that
+
+---
+
+class: center, middle
+
+# CSS Modules
+
+---
+
+# Traditional CSS
+
+```css
+.btn { /* all styles for Normal */ }
+.btn--disabled { /* overrides for Disabled */ }
+.btn--error { /* overrides for Error */ }
+.btn--in-progress { /* overrides for In Progress */
+```
+
+``` js
+export const Button = ({disabled}) => {
+  let classes = classNames('btn', {'btn--disabled': disabled})
+
+  return (
+    <button class={classes} role="button">
+      Push me
+    </button>
+  )
+}
+```
+
+???
+
+Traditionally we would do something like this for styling specific pieces of
+our application.
+
+---
+
+# With CSS Modules
+
+``` css
+/* shared/button.css */
+.normal { /* all styles for Normal */ }
+.disabled { /* all styles for Disabled */ }
+.error { /* all styles for Error */ }
+.in-progress { /* all styles for In Progress */
+```
+
+``` js
+import styles from "./button.css"
+
+export const Button = ({disabled}) => {
+  let className = disabled ? styles.disabled : styles.normal
+
+  return (
+    <button class={className} role="button">
+      Push me
+    </button>
+  )
+}
+```
+
+???
+
+Now we just include what we want with the styles. This is SO much better.
+The alternative is just to use a weak naming connascence instead. OR we could
+just like...use the thing man.
+
+---
+
+# Composition is everything
+
+``` css
+/* shared/button.css */
+
+.common {
+  /* Base button styles */
+}
+
+.normal {
+  composes: common;
+
+  /* any other normal styles */
+}
+
+.disabled {
+  composes: common;
+
+  /* any disabled styles */
+}
+```
+
+---
+
+``` css
+/* shared/button.css */
+
+.common {
+  /* Base button styles */
+}
+
+.normal {
+  composes: common;
+  composes: primary from "./font.css";
+  composes: primary from "./background.css";
+}
+
+.disabled {
+  composes: common;
+  composes: subtle from "./font.css";
+  composes: subtle from "./background.css";
+}
+```
+
+``` css
+/* shared/font.css */
+.primary { color: #0e0e0e; }
+.subtle  { color: #b3b3b3; }
+```
+
+``` css
+/* shared/background.css */
+.primary { background-color: #c200ba; }
+.subtle  { background-color: #d4d4d4; }
+```
+
+---
+
+``` css
+/* shared/button.css */
+
+.common {
+  composes: bold medium from "./fonts.css"
+  /* Other common styles */
+}
+
+.normal {
+  composes: common;
+  composes: primary from "./font.css";
+  composes: primary from "./background.css";
+}
+
+.disabled {
+  composes: common;
+  composes: subtle from "./font.css";
+  composes: subtle from "./background.css";
+}
+```
+
+``` css
+/* shared/font.css */
+.primary { color: #0e0e0e; }
+.subtle  { color: #b3b3b3; }
+
+.bold   { font-weight: 600; }
+.normal { font-weight: 400; }
+.light  { font-weight: 200; }
+
+.small  { font-size: 0.8rem; }
+.medium { font-size: 1rem; }
+.large  { font-size: 1.2rem; }
+```
+
+---
+
+# Get more re-use
+
+``` js
+import React from 'react'
+import styles from './button.css'
+
+export const Button = ({state, text}) => (
+  <button role="button" className={styles[state]}>
+    {text}
+  </button>
+)
+
+<Button state="error" text="Error" />
+<Button state="normal" text="Normal" />
+<Button state="in-progress" text="In-Progress" />
+```
+
+---
+
+# Get more re-use
+
+``` js
+import React from 'react'
+import { submit } from './submit_button.css'
+
+export const Button = ({text}) => (
+  <button role="submit" className={ submit }>
+    {text ? text : "Submit"}
+  </button>
+)
+```
+
+``` css
+.submit {
+  composes: primary from "../shared/button.css";
+  composes: uppercase from "../shared/font.css";
+}
+```
+
+---
+
+# Co-locate styles
+
+``` js
+|-components
+  |-avatar
+    |- Avatar.jsx
+    |- avatar.css
+  |-shared
+    |- background.css
+    |- border.css
+    |- font.css
+    |- layout.css
+  |- CardAuthors.jsx
+```
 
 ---
 
 # Avatar styles
 
+``` css
+.common {
+  max-height: 22px;
+  max-width: 22px;
+  height: auto;
+  margin-right: 0.25rem;
+}
+
+.medium {
+  composes: common;
+  max-height: 36px;
+  max-width: 36px;
+}
+
+.large {
+  composes: common;
+  max-height: 48px;
+  max-width: 48px;
+}
+```
+
+``` js
+import React from 'react'
+import { common } from './avatar.css'
+
+export const Avatar = ({ src, name }) => (
+  <img className={ common } src={ src } title={ name } />
+)
+```
+
 ---
 
 # Card Author just gets flexbox styles
 
+``` js
+import React from 'react'
+import { Avatar } from './avatar/Avatar.jsx'
+import { flex } from './shared/layout.css'
+
+export const CardAuthors = React.createClass({
+  getInitialState() {
+    return {
+      authors: [
+        {userId: 1, avatar_url: 'example.com/1.png', name: 'Chris'}
+      , {userId: 2, avatar_url: 'example.com/2.png', name: 'Alice'}
+      , {userId: 3, avatar_url: 'example.com/3.png', name: 'Archer'}
+      ]
+    }
+  }
+
+, render() {
+    let avatars = this.state.authors.map( author => (
+      <Avatar key={author.userId} src={author.avatar_url} name={author.name} />
+    ))
+
+    return (
+      <div className={ flex }>
+        { avatars }
+      </div>
+    )
+  }
+})
+```
+
 ---
 
-# How can we takle the problems of styling
-
----
-
-# Composing base styles
-
-???
-
-No global pollution
-
----
-
-# Composing base styles with each other to create component styles
-
----
-
-# Stateful components just get layout styles
-
----
+class: center, middle
 
 # How do we actually do this?
 
@@ -356,11 +608,47 @@ check it out.
 
 ---
 
+class: center, middle
+
 # Loaders and pipelines
 
 ---
 
+# Loaders and pipelines
+
+``` js
+module.exports = {
+  // ...
+
+, module: {
+    loaders: [
+      { test: /\.jsx?$/, loaders: [ 'babel' ], exclude: /node_modules/ }
+    , { test: /\.css$/, loader: 'style!css?modules!postcss' }
+    ]
+  }
+
+, postcss: function() {
+    return [
+        values
+      , postcss_nested
+      , postcss_color
+      , autoprefixer
+      , mqpacker
+      , csswring
+    ]
+  }
+
+  //...
+};
+```
+
+---
+
 # React Loader
+
+``` js
+{ test: /\.jsx?$/, loaders: [ 'babel' ], exclude: /node_modules/ }
+```
 
 ???
 
@@ -369,6 +657,10 @@ We just use babel here to compile our jsx
 ---
 
 # CSS Loader
+
+``` js
+{ test: /\.css$/, loader: 'style!css?modules!postcss' }
+```
 
 ???
 
@@ -380,13 +672,92 @@ class: center, middle
 
 # Post css
 
+???
+
+Who is familiar with postcss?
+Post-processor
+There are a lot of benefits to using something like postcss. A lot of this stuff
+is available to sass...but not all. If you want to use css next then you're using postcss
+
+---
+
+# Postcss
+
+``` js
+postcss: function() {
+  return [
+      autoprefixer
+    , mqpacker
+    , csswring
+  ]
+}
+```
+
 ---
 
 # Autoprefixer
 
+``` css
+.card-authors {
+  display: flex;
+  flex-grow: 1.25;
+  flex-shrink: 0;
+  align-items: center;
+}
+```
+--
+
+``` css
+.card-authors {
+  -webkit-flex: 1.25;
+  -ms-flex: 1.25;
+  flex: 1.25;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+```
+
 ---
 
 # Auto group media queries
+
+``` css
+.avatar { display: none; }
+
+@media screen and (min-width: 42rem) {
+  .avatar { display: flex; }
+}
+
+.button { flex: 1 0 100%; }
+
+@media screen and (min-width: 42rem) {
+  .button { flex: 1; }
+}
+```
+--
+
+``` css
+.avatar { display: none; }
+.button { flex: 1 0 100%; }
+
+@media screen and (min-width: 42rem) {
+  .avatar { display: flex; }
+  .button { flex: 1; }
+}
+```
+
+---
+
+# Loads of plugins
+
+https://github.com/postcss/postcss
 
 ---
 
@@ -412,8 +783,12 @@ class: center, middle
 
 # Thanks
 
+https://github.com/keathley/webpack-react-skeleton
+
 - git-repo
 - slides
+
+## @ChrisKeathley / keathley@carbonfive.com / keathley.io
 
 
 
