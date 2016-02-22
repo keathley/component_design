@@ -39,6 +39,59 @@
       .a { background-color: red;   }
       .b { background-color: blue;  }
       .c { background-color: green; }
+
+      .avatar {
+        height: 100%;
+        width: 6rem;
+        border-radius: 0.2rem;
+        /*border: 3px solid #131313;*/
+      }
+
+      .btn {
+        flex: 1;
+        text-align: center;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-radius: 2px;
+      }
+
+      .btn:not(:first-child) { margin-left: 1rem; }
+
+      .btn-normal {
+        color: #171717;
+        background-color: #b8b8b8;
+        border-color: #595959;
+      }
+
+      .btn-error {
+        color: #fff;
+        background-color: #e80000;
+        border-color: #6a0000;
+      }
+
+      .btn-disabled {
+        color: #b8b8b8;
+        background-color: #777777;
+        font-style: italic;
+        border-color: #595959;
+      }
+
+      .submit-button {
+        font-size: 2rem;
+        color: #fff;
+        background-color: #df0070;
+      }
+
+      .rows {
+        flex-flow: column;
+      }
+
+      .rows .btn {
+        width: 50%;
+        margin-bottom: 1rem;
+      }
+
+      .rows .btn:not(:first-child) { margin-left: 0;}
     </style>
   </head>
   <body>
@@ -47,6 +100,8 @@
 class: center, middle
 
 # Designing Components with React & CSSModules
+
+### Chris Keathley / @ChrisKeathley / keathley.io
 
 ---
 
@@ -183,6 +238,9 @@ export const Avatar = ({ src, name }) => (
 )
 ```
 
+.example-wrapper[
+  .img[<img src="ernie.jpg" class="avatar"></img>]]
+
 ---
 
 # Directory structure
@@ -196,7 +254,7 @@ export const Avatar = ({ src, name }) => (
 
 ---
 
-# CardAuthors component
+# CardAuthors Component
 
 ``` js
 import React from 'react'
@@ -235,21 +293,6 @@ class: center, middle
 
 ---
 
-# Ways to organize CSS
-
-- atomic design
-- Smacss
-- OOCSS
-- BEM
-- I just stick stuff in style attributes on elements
-
-???
-
-There are so many ways to try to organize this stuff. Its a testament to how
-hard this problem is.
-
----
-
 # Why is this hard?
 
 --
@@ -261,6 +304,9 @@ hard this problem is.
 --
 
 - Encapsulation is hard
+--
+
+- Styles are coupled to your html structure
 --
 
 - Browsers
@@ -369,7 +415,81 @@ class: center, middle
 
 class: center, middle
 
-# Styles are tightly coupled to the structure of your html and thus the component
+# Global Scope
+
+---
+
+# Global Scope
+
+``` css
+.text {
+  font-size: 1rem;
+  font-weight: 200;
+}
+
+.footer {
+  width: 100%;
+  height: 4rem;
+  background-color: blue;
+}
+
+.card {
+  width: 15rem;
+}
+```
+
+``` js
+<div class="card">
+  <p class="text">
+    This is some content
+  </p>
+  <div class="footer">
+    <p class="text">
+      This is the footer
+    </p>
+  </div>
+</div>
+```
+
+---
+
+# Global Scope
+
+``` css
+.card-text {
+  font-size: 1rem;
+  font-weight: 200;
+}
+
+.card-footer {
+  width: 100%;
+  height: 4rem;
+  background-color: blue;
+}
+
+.card {
+  width: 15rem;
+}
+```
+
+``` js
+<div class="card">
+  <p class="card-text">
+    This is some content
+  </p>
+  <div class="card-footer">
+    <p class="card-text">
+      This is the footer
+    </p>
+  </div>
+</div>
+```
+
+---
+
+class: center, middle
+
+# Methodology
 
 ---
 
@@ -388,6 +508,12 @@ class: center, middle
 class: center, middle
 
 # OOCSS
+
+---
+
+class: center, middle
+
+# BEM
 
 ---
 
@@ -429,6 +555,11 @@ export const Button = ({disabled}) => {
 }
 ```
 
+.example-wrapper[
+  .btn.btn-normal[Normal]
+  .btn.btn-disabled[Disabled]
+  .btn.btn-error[Error]]
+
 ???
 
 Traditionally we would do something like this for styling specific pieces of
@@ -459,6 +590,10 @@ export const Button = ({disabled}) => {
   )
 }
 ```
+.example-wrapper[
+  .btn.btn-normal[Normal]
+  .btn.btn-disabled[Disabled]
+  .btn.btn-error[Error]]
 
 ???
 
@@ -580,6 +715,11 @@ export const Button = ({state, text}) => (
 <Button state="in-progress" text="In-Progress" />
 ```
 
+.example-wrapper[
+  .btn.btn-normal[Normal]
+  .btn.btn-disabled[Disabled]
+  .btn.btn-error[Error]]
+
 ---
 
 # Get more re-use
@@ -602,6 +742,9 @@ export const Button = ({text}) => (
 }
 ```
 
+.example-wrapper[
+  .btn.submit-button[Submit]]
+
 ---
 
 # Co-locate styles
@@ -621,72 +764,58 @@ export const Button = ({text}) => (
 
 ---
 
-# Avatar styles
-
-``` css
-.common {
-  max-height: 22px;
-  max-width: 22px;
-  height: auto;
-  margin-right: 0.25rem;
-}
-
-.medium {
-  composes: common;
-  max-height: 36px;
-  max-width: 36px;
-}
-
-.large {
-  composes: common;
-  max-height: 48px;
-  max-width: 48px;
-}
-```
+# Stateful components use layout styles
 
 ``` js
 import React from 'react'
-import { common } from './avatar.css'
-
-export const Avatar = ({ src, name }) => (
-  <img className={ common } src={ src } title={ name } />
-)
-```
-
----
-
-# Card Author just gets flexbox styles
-
-``` js
-import React from 'react'
-import { Avatar } from './avatar/Avatar.jsx'
+import { Button } from './shared/Button.jsx'
 import { flex } from './shared/layout.css'
 
-export const CardAuthors = React.createClass({
-  getInitialState() {
-    return {
-      authors: [
-        {userId: 1, avatar_url: 'example.com/1.png', name: 'Chris'}
-      , {userId: 2, avatar_url: 'example.com/2.png', name: 'Alice'}
-      , {userId: 3, avatar_url: 'example.com/3.png', name: 'Archer'}
-      ]
-    }
-  }
-
-, render() {
-    let avatars = this.state.authors.map( author => (
-      <Avatar key={author.userId} src={author.avatar_url} name={author.name} />
-    ))
-
+export const ButtonContainer = React.createClass({
+  render() {
     return (
       <div className={ flex }>
-        { avatars }
+        <Button state='normal' text="Normal" />
+        <Button state='error' text="Error" />
+        <Button state='disabled' text="Disabled" />
       </div>
     )
   }
 })
 ```
 
+.example-wrapper.cols[
+  .btn.btn-normal[Normal]
+  .btn.btn-error[Error]
+  .btn.btn-disabled[Disabled]]
+
+---
+
+# Stateful components use layout styles
+
+``` js
+import React from 'react'
+import classNames from 'classnames'
+import { Button } from './shared/Button.jsx'
+import { flex, rows } from './shared/layout.css'
+
+export const ButtonContainer = React.createClass({
+  render() {
+    return (
+      <div className={ classNames(flex, rows) }>
+        <Button state='normal' text="Normal" />
+        <Button state='error' text="Error" />
+        <Button state='disabled' text="Disabled" />
+      </div>
+    )
+  }
+})
+```
+
+.example-wrapper.rows[
+  .btn.btn-normal[Normal]
+  .btn.btn-error[Error]
+  .btn.btn-disabled[Disabled]]
 ---
 
 class: center, middle
